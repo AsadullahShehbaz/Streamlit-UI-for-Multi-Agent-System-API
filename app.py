@@ -72,7 +72,7 @@ else:
             
             if st.button("Login", type="primary"):
                 result, status = login_user(login_username, login_password)
-                if status == 200:
+                if status in [200,201:
                     st.session_state.token = result["access_token"]
                     st.session_state.user_info = {
                         "username": result["username"],
