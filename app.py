@@ -72,7 +72,7 @@ else:
             
             if st.button("Login", type="primary"):
                 result, status = login_user(login_username, login_password)
-                if status in [200,201:
+                if status in [200,201]:
                     st.session_state.token = result["access_token"]
                     st.session_state.user_info = {
                         "username": result["username"],
@@ -90,7 +90,7 @@ else:
             
             if st.button("Register", type="primary"):
                 result, status = register_user(reg_username, reg_email, reg_password)
-                if status == 200:
+                if status in [200,201]:
                     # Set success flag and rerun to show message
                     st.session_state.registration_success = True
                     st.rerun()
