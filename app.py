@@ -14,6 +14,10 @@ for key, default_value in SESSION_KEYS.items():
     if key not in st.session_state:
         st.session_state[key] = default_value
 
+# Add registration success flag to session state
+if 'registration_success' not in st.session_state:
+    st.session_state.registration_success = False
+
 # Main page
 st.title("🔬 Multi-Agent Research System")
 st.markdown("### Welcome to AI-Powered Research Platform")
@@ -29,6 +33,7 @@ if st.session_state.token:
         st.session_state.user_info = None
         st.session_state.current_research_id = None
         st.session_state.messages = []
+        st.session_state.registration_success = False
         st.rerun()
     
     st.divider()
@@ -47,13 +52,17 @@ if st.session_state.token:
                     st.switch_page("pages/2_📊_View_Research.py")
     else:
         st.info("No research history yet. Start by asking a question!")
-
 else:
     st.info("👈 Please login or register from the sidebar to continue")
     
     # Sidebar for auth
     with st.sidebar:
         st.markdown("### 🔐 Authentication")
+        
+        # Show registration success message if flag is set
+        if st.session_state.registration_success:
+            st.success("✅ Registration successful! Please login.")
+            st.session_state.registration_success = False  # Reset the flag
         
         tab1, tab2 = st.tabs(["Login", "Register"])
         
@@ -82,6 +91,8 @@ else:
             if st.button("Register", type="primary"):
                 result, status = register_user(reg_username, reg_email, reg_password)
                 if status == 200:
-                    st.success("Registration successful! Please login.")
+                    # Set success flag and rerun to show message
+                    st.session_state.registration_success = True
+                    st.rerun()
                 else:
                     st.error(result.get("detail", "Registration failed"))
