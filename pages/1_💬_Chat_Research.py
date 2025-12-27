@@ -449,7 +449,7 @@ if not st.session_state.get('token'):
     st.error("🔒 Authentication Required")
     st.warning("Please login from the home page to access the AI Research Assistant")
     if st.button("🏠 Go to Home", type="primary"):
-        st.switch_page("1_🏠_Home.py")
+        st.switch_page("app.py")
     st.stop()
 
 # ------------------------------------
