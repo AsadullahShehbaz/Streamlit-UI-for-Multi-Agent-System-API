@@ -149,29 +149,61 @@ st.markdown("""
     overflow-wrap: break-word !important;
     display: inline-block !important;
     max-width: 100% !important;
+    white-space: normal !important;
 }
 
-/* Table link fix */
+/* Table link fix - ENHANCED */
 .stChatMessage table {
     width: 100% !important;
     table-layout: fixed !important;
+    overflow-x: auto !important;
+    display: block !important;
 }
 
-.stChatMessage td {
+.stChatMessage td, .stChatMessage th {
     word-break: break-word !important;
     overflow-wrap: break-word !important;
+    white-space: normal !important;
+    max-width: 0 !important;
+    overflow: hidden !important;
 }
 
 .stChatMessage td a {
-    display: block !important;
+    display: inline-block !important;
     word-break: break-all !important;
-    overflow-wrap: break-word !important;
+    overflow-wrap: anywhere !important;
+    white-space: normal !important;
+    max-width: 100% !important;
+    font-size: 0.85rem !important;
 }
 
 /* Markdown content width */
 .stChatMessage [data-testid="stMarkdownContainer"] {
     max-width: 100% !important;
     overflow-wrap: break-word !important;
+    overflow-x: auto !important;
+}
+
+/* Table wrapper to prevent overflow */
+.stChatMessage [data-testid="stMarkdownContainer"] > div {
+    overflow-x: auto !important;
+    max-width: 100% !important;
+}
+
+/* Make tables responsive with horizontal scroll if needed */
+.stChatMessage tbody, .stChatMessage thead {
+    display: table !important;
+    width: 100% !important;
+}
+
+.stChatMessage table tr {
+    display: table-row !important;
+}
+
+/* Ensure table container is scrollable */
+.stChatMessage > div {
+    overflow-x: auto !important;
+    max-width: 100% !important;
 }
 
 /* Chat Input */
@@ -674,11 +706,9 @@ if user_query:
             response_placeholder.markdown(error_msg)
             st.session_state.messages.append({"role": "assistant", "content": error_msg})
         else:
-            # Success - Display report
+            # Success - Display report (Fixed to show clean HTML)
             report_md = f"""
 ### ✅ Research Completed Successfully
-
-<div class="status-badge">🎉 Analysis Complete</div>
 
 **Research ID:** `{result['id']}`  
 **Generated:** {time.strftime('%Y-%m-%d %H:%M:%S')}
