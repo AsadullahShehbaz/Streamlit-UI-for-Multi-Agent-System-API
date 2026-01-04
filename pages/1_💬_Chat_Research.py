@@ -2,6 +2,7 @@ import streamlit as st
 from utils import create_research, get_research_history
 import base64
 import time
+import re
 
 # ------------------------------------
 # 🌈 PAGE CONFIGURATION
@@ -424,14 +425,115 @@ hr {
     to {opacity: 1;}
 }
 
-/* Code Blocks */
-code {
+/* Code Blocks - Enhanced Interactive Style */
+.stChatMessage pre {
+    background: linear-gradient(135deg, rgba(30, 41, 59, 0.95), rgba(15, 23, 42, 0.95)) !important;
+    border: 1px solid rgba(102, 126, 234, 0.3) !important;
+    border-radius: 12px !important;
+    padding: 1.5rem !important;
+    margin: 1rem 0 !important;
+    overflow-x: auto !important;
+    position: relative !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3) !important;
+    white-space: pre-wrap !important;
+    word-wrap: break-word !important;
+    overflow-wrap: break-word !important;
+    font-family: 'Fira Code', 'Monaco', 'Courier New', monospace !important;
+    font-size: 0.9rem !important;
+    line-height: 1.6 !important;
+}
+
+.stChatMessage pre:hover {
+    border-color: rgba(102, 126, 234, 0.6) !important;
+    box-shadow: 0 6px 25px rgba(102, 126, 234, 0.2) !important;
+}
+
+/* Code inside pre */
+.stChatMessage pre code {
+    background: transparent !important;
+    color: #e2e8f0 !important;
+    padding: 0 !important;
+    border-radius: 0 !important;
+    font-size: inherit !important;
+    display: block !important;
+}
+
+/* Inline code (not in pre) */
+.stChatMessage code {
     background: rgba(102, 126, 234, 0.2) !important;
     color: #c084fc !important;
     padding: 0.2rem 0.5rem !important;
     border-radius: 6px !important;
     font-family: 'Monaco', 'Courier New', monospace !important;
-    word-break: break-all !important;
+    font-size: 0.9em !important;
+    border: 1px solid rgba(102, 126, 234, 0.3) !important;
+}
+
+.stChatMessage :not(pre) > code {
+    white-space: nowrap !important;
+}
+
+/* Copy button for code blocks */
+.stChatMessage [data-testid="stMarkdownContainer"] {
+    position: relative;
+}
+
+/* Syntax highlighting colors */
+.stChatMessage pre code .token.comment {
+    color: #6b7280 !important;
+}
+
+.stChatMessage pre code .token.string {
+    color: #10b981 !important;
+}
+
+.stChatMessage pre code .token.number {
+    color: #f59e0b !important;
+}
+
+.stChatMessage pre code .token.keyword {
+    color: #8b5cf6 !important;
+}
+
+.stChatMessage pre code .token.function {
+    color: #60a5fa !important;
+}
+
+/* Add language label to code blocks */
+.stChatMessage pre::before {
+    content: 'Code';
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    background: rgba(102, 126, 234, 0.2);
+    color: rgba(255, 255, 255, 0.7);
+    padding: 0.25rem 0.75rem;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    font-family: 'Inter', sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Scrollbar for code blocks */
+.stChatMessage pre::-webkit-scrollbar {
+    height: 8px;
+    width: 8px;
+}
+
+.stChatMessage pre::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 10px;
+}
+
+.stChatMessage pre::-webkit-scrollbar-thumb {
+    background: rgba(102, 126, 234, 0.5);
+    border-radius: 10px;
+}
+
+.stChatMessage pre::-webkit-scrollbar-thumb:hover {
+    background: rgba(102, 126, 234, 0.7);
 }
 
 /* Sidebar Headers */
@@ -649,6 +751,112 @@ with st.sidebar:
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
+# Add JavaScript for enhanced code block interactivity
+st.markdown("""
+<script>
+// Wait for DOM to load
+document.addEventListener('DOMContentLoaded', function() {
+    enhanceCodeBlocks();
+});
+
+// Also run after Streamlit updates
+setTimeout(enhanceCodeBlocks, 1000);
+
+function enhanceCodeBlocks() {
+    // Find all pre elements in chat messages
+    const preElements = document.querySelectorAll('.stChatMessage pre');
+    
+    preElements.forEach((pre, index) => {
+        // Skip if already enhanced
+        if (pre.classList.contains('enhanced')) return;
+        pre.classList.add('enhanced');
+        
+        // Create copy button
+        const copyBtn = document.createElement('button');
+        copyBtn.innerHTML = '📋 Copy';
+        copyBtn.style.cssText = `
+            position: absolute;
+            top: 0.5rem;
+            right: 4rem;
+            background: rgba(102, 126, 234, 0.8);
+            color: white;
+            border: none;
+            padding: 0.4rem 0.8rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.75rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            z-index: 10;
+        `;
+        
+        copyBtn.addEventListener('mouseenter', function() {
+            this.style.background = 'rgba(102, 126, 234, 1)';
+            this.style.transform = 'scale(1.05)';
+        });
+        
+        copyBtn.addEventListener('mouseleave', function() {
+            this.style.background = 'rgba(102, 126, 234, 0.8)';
+            this.style.transform = 'scale(1)';
+        });
+        
+        copyBtn.addEventListener('click', function() {
+            const code = pre.querySelector('code');
+            const text = code ? code.textContent : pre.textContent;
+            
+            navigator.clipboard.writeText(text).then(() => {
+                copyBtn.innerHTML = '✅ Copied!';
+                copyBtn.style.background = 'rgba(34, 197, 94, 0.8)';
+                
+                setTimeout(() => {
+                    copyBtn.innerHTML = '📋 Copy';
+                    copyBtn.style.background = 'rgba(102, 126, 234, 0.8)';
+                }, 2000);
+            });
+        });
+        
+        pre.style.position = 'relative';
+        pre.appendChild(copyBtn);
+        
+        // Add line numbers
+        const code = pre.querySelector('code');
+        if (code) {
+            const lines = code.textContent.split('\\n');
+            if (lines.length > 3) {
+                code.style.paddingLeft = '3rem';
+                const lineNumbers = document.createElement('div');
+                lineNumbers.style.cssText = `
+                    position: absolute;
+                    left: 0;
+                    top: 1.5rem;
+                    padding: 0 0.75rem;
+                    color: rgba(255, 255, 255, 0.3);
+                    text-align: right;
+                    user-select: none;
+                    font-family: 'Monaco', 'Courier New', monospace;
+                    font-size: 0.8rem;
+                    line-height: 1.6;
+                `;
+                
+                let lineNumbersHTML = '';
+                for (let i = 1; i <= lines.length; i++) {
+                    lineNumbersHTML += i + '<br>';
+                }
+                lineNumbers.innerHTML = lineNumbersHTML;
+                pre.appendChild(lineNumbers);
+            }
+        }
+    });
+}
+
+// Re-run after Streamlit rerenders
+new MutationObserver(enhanceCodeBlocks).observe(document.body, {
+    childList: true,
+    subtree: true
+});
+</script>
+""", unsafe_allow_html=True)
+
 # Welcome Message
 if len(st.session_state.messages) == 0:
     st.markdown("""
@@ -686,7 +894,30 @@ chat_container = st.container()
 with chat_container:
     for msg in st.session_state.messages:
         with st.chat_message(msg["role"], avatar="🧑‍💼" if msg["role"] == "user" else "🤖"):
-            st.markdown(msg["content"])
+            # Enhanced display with better code block handling
+            content = msg["content"]
+            
+            # Check if content has code blocks
+            if "```" in content:
+                parts = content.split("```")
+                for i, part in enumerate(parts):
+                    if i % 2 == 0:
+                        # Regular text
+                        if part.strip():
+                            st.markdown(part)
+                    else:
+                        # Code block
+                        lines = part.split('\n', 1)
+                        language = lines[0].strip() if len(lines) > 0 else ""
+                        code_content = lines[1] if len(lines) > 1 else part
+                        
+                        # Use streamlit's code component for better display
+                        if language and language.isalpha():
+                            st.code(code_content, language=language)
+                        else:
+                            st.code(code_content, language="python")
+            else:
+                st.markdown(content)
 
 # ------------------------------------
 # 📥 USER INPUT
@@ -722,7 +953,15 @@ Please try again or contact support if the issue persists.
             response_placeholder.markdown(error_msg)
             st.session_state.messages.append({"role": "assistant", "content": error_msg})
         else:
-            # Success - Display clean report
+            # Success - Display clean report without HTML tags
+            # Clean the final_report by removing any HTML tags if present
+            final_report = result.get('final_report', 'No report generated')
+            
+            # Remove the status-badge div if it exists in the report
+            if '<div class="status-badge">' in final_report:
+                import re
+                final_report = re.sub(r'<div class="status-badge">.*?</div>', '', final_report, flags=re.DOTALL)
+            
             report_md = f"""
 ### ✅ Research Completed Successfully
 
@@ -733,7 +972,7 @@ Please try again or contact support if the issue persists.
 
 ## 📄 Final Report
 
-{result.get('final_report', 'No report generated')}
+{final_report}
 
 ---
 
