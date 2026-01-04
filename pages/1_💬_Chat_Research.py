@@ -143,6 +143,37 @@ st.markdown("""
     line-height: 1.7;
 }
 
+/* Fix for long URLs and links - CRITICAL FIX */
+.stChatMessage a {
+    word-break: break-all !important;
+    overflow-wrap: break-word !important;
+    display: inline-block !important;
+    max-width: 100% !important;
+}
+
+/* Table link fix */
+.stChatMessage table {
+    width: 100% !important;
+    table-layout: fixed !important;
+}
+
+.stChatMessage td {
+    word-break: break-word !important;
+    overflow-wrap: break-word !important;
+}
+
+.stChatMessage td a {
+    display: block !important;
+    word-break: break-all !important;
+    overflow-wrap: break-word !important;
+}
+
+/* Markdown content width */
+.stChatMessage [data-testid="stMarkdownContainer"] {
+    max-width: 100% !important;
+    overflow-wrap: break-word !important;
+}
+
 /* Chat Input */
 .stChatInput {
     position: sticky;
@@ -331,6 +362,7 @@ code {
     padding: 0.2rem 0.5rem !important;
     border-radius: 6px !important;
     font-family: 'Monaco', 'Courier New', monospace !important;
+    word-break: break-all !important;
 }
 
 /* Sidebar Headers */
@@ -429,15 +461,26 @@ section[data-testid="stSidebar"] .caption {
     font-size: 1.2rem !important;
 }
 
-/* Links */
+/* Links - Enhanced for proper wrapping */
 a {
     color: #60a5fa !important;
     text-decoration: none !important;
     transition: color 0.3s ease;
+    word-break: break-word !important;
+    overflow-wrap: break-word !important;
+    hyphens: auto !important;
 }
 
 a:hover {
     color: #93c5fd !important;
+    text-decoration: underline !important;
+}
+
+/* Pre and code blocks should also wrap */
+pre {
+    white-space: pre-wrap !important;
+    word-wrap: break-word !important;
+    overflow-wrap: break-word !important;
 }
 </style>
 """, unsafe_allow_html=True)
