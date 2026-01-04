@@ -14,7 +14,7 @@ st.set_page_config(
 )
 
 # ------------------------------------
-# 🎨 PREMIUM CUSTOM STYLES
+# 🎨 PREMIUM CUSTOM STYLES WITH ROBUST LINK FIX
 # ------------------------------------
 st.markdown("""
 <style>
@@ -143,68 +143,105 @@ st.markdown("""
     line-height: 1.7;
 }
 
-/* Fix for long URLs and links - CRITICAL FIX */
-.stChatMessage a {
-    word-break: break-all !important;
-    overflow-wrap: break-word !important;
-    display: inline-block !important;
-    max-width: 100% !important;
-    white-space: normal !important;
+/* ============================================
+   ROBUST TABLE AND LINK FIX - CRITICAL SECTION
+   ============================================ */
+
+/* Force tables to be responsive */
+.stChatMessage table {
+    display: block !important;
+    width: 100% !important;
+    overflow-x: auto !important;
+    border-collapse: collapse !important;
+    font-size: 0.9rem !important;
 }
 
-/* Table link fix - ENHANCED */
-.stChatMessage table {
+.stChatMessage thead,
+.stChatMessage tbody {
+    display: table !important;
     width: 100% !important;
     table-layout: fixed !important;
-    overflow-x: auto !important;
-    display: block !important;
 }
 
-.stChatMessage td, .stChatMessage th {
+.stChatMessage tr {
+    display: table-row !important;
+    width: 100% !important;
+}
+
+.stChatMessage th,
+.stChatMessage td {
+    display: table-cell !important;
+    padding: 0.75rem !important;
+    vertical-align: top !important;
+    word-wrap: break-word !important;
     word-break: break-word !important;
     overflow-wrap: break-word !important;
+    hyphens: auto !important;
     white-space: normal !important;
-    max-width: 0 !important;
-    overflow: hidden !important;
 }
 
-.stChatMessage td a {
-    display: inline-block !important;
+/* Specific fix for link column - make it wider and wrap properly */
+.stChatMessage td:last-child,
+.stChatMessage th:last-child {
+    min-width: 200px !important;
+    max-width: 300px !important;
+    width: 25% !important;
+}
+
+/* Force all links to wrap properly */
+.stChatMessage a {
+    display: inline !important;
+    word-wrap: break-word !important;
     word-break: break-all !important;
     overflow-wrap: anywhere !important;
     white-space: normal !important;
+    line-height: 1.6 !important;
+    color: #60a5fa !important;
+    text-decoration: none !important;
+    hyphens: auto !important;
     max-width: 100% !important;
+}
+
+.stChatMessage td a {
     font-size: 0.85rem !important;
 }
 
-/* Markdown content width */
+/* Ensure markdown container doesn't restrict width */
 .stChatMessage [data-testid="stMarkdownContainer"] {
-    max-width: 100% !important;
-    overflow-wrap: break-word !important;
-    overflow-x: auto !important;
-}
-
-/* Table wrapper to prevent overflow */
-.stChatMessage [data-testid="stMarkdownContainer"] > div {
-    overflow-x: auto !important;
-    max-width: 100% !important;
-}
-
-/* Make tables responsive with horizontal scroll if needed */
-.stChatMessage tbody, .stChatMessage thead {
-    display: table !important;
     width: 100% !important;
-}
-
-.stChatMessage table tr {
-    display: table-row !important;
-}
-
-/* Ensure table container is scrollable */
-.stChatMessage > div {
-    overflow-x: auto !important;
     max-width: 100% !important;
+    overflow-x: auto !important;
 }
+
+/* Additional wrapper fix */
+.stChatMessage > div {
+    width: 100% !important;
+    max-width: 100% !important;
+    overflow-x: auto !important;
+}
+
+/* Scrollbar for tables */
+.stChatMessage table::-webkit-scrollbar {
+    height: 8px;
+}
+
+.stChatMessage table::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+}
+
+.stChatMessage table::-webkit-scrollbar-thumb {
+    background: rgba(102, 126, 234, 0.5);
+    border-radius: 10px;
+}
+
+.stChatMessage table::-webkit-scrollbar-thumb:hover {
+    background: rgba(102, 126, 234, 0.7);
+}
+
+/* ============================================
+   END OF TABLE AND LINK FIX SECTION
+   ============================================ */
 
 /* Chat Input */
 .stChatInput {
@@ -440,28 +477,6 @@ section[data-testid="stSidebar"] .caption {
     background: linear-gradient(180deg, #764ba2, #667eea);
 }
 
-/* Research Status Badge */
-.status-badge {
-    display: inline-block;
-    padding: 0.4rem 0.8rem;
-    border-radius: 20px;
-    font-size: 0.85rem;
-    font-weight: 600;
-    background: linear-gradient(135deg, #22c55e, #16a34a);
-    color: white;
-    margin: 0.5rem 0;
-    animation: pulse 2s infinite;
-}
-
-@keyframes pulse {
-    0%, 100% {
-        box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7);
-    }
-    50% {
-        box-shadow: 0 0 0 10px rgba(34, 197, 94, 0);
-    }
-}
-
 /* Loading Animation */
 .loading-dots {
     display: inline-block;
@@ -494,15 +509,6 @@ section[data-testid="stSidebar"] .caption {
 }
 
 /* Links - Enhanced for proper wrapping */
-a {
-    color: #60a5fa !important;
-    text-decoration: none !important;
-    transition: color 0.3s ease;
-    word-break: break-word !important;
-    overflow-wrap: break-word !important;
-    hyphens: auto !important;
-}
-
 a:hover {
     color: #93c5fd !important;
     text-decoration: underline !important;
@@ -513,6 +519,22 @@ pre {
     white-space: pre-wrap !important;
     word-wrap: break-word !important;
     overflow-wrap: break-word !important;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .chat-title {
+        font-size: 2rem !important;
+    }
+    
+    .stChatMessage table {
+        font-size: 0.8rem !important;
+    }
+    
+    .stChatMessage th,
+    .stChatMessage td {
+        padding: 0.5rem !important;
+    }
 }
 </style>
 """, unsafe_allow_html=True)
@@ -681,32 +703,26 @@ if user_query:
 
     # Generate AI response
     with st.chat_message("assistant", avatar="🤖"):
-        status_placeholder = st.empty()
         response_placeholder = st.empty()
         
-        # Show loading status
-        status_placeholder.markdown(
-            '<div class="status-badge">🔬 Researching<span class="loading-dots"></span></div>',
-            unsafe_allow_html=True
-        )
+        # Show loading with clean message
+        response_placeholder.info("🔬 Researching your topic... Please wait.")
         
         with st.spinner("Analyzing documents and forming conclusions..."):
             result, status = create_research(st.session_state.token, user_query, max_iterations=2)
-
-        status_placeholder.empty()
         
         if status != 200:
             error_msg = f"""
-            ### ❌ Research Error
-            
-            **Error Details:** {result.get('detail', 'Unknown error occurred')}
-            
-            Please try again or contact support if the issue persists.
-            """
+### ❌ Research Error
+
+**Error Details:** {result.get('detail', 'Unknown error occurred')}
+
+Please try again or contact support if the issue persists.
+"""
             response_placeholder.markdown(error_msg)
             st.session_state.messages.append({"role": "assistant", "content": error_msg})
         else:
-            # Success - Display report (Fixed to show clean HTML)
+            # Success - Display clean report
             report_md = f"""
 ### ✅ Research Completed Successfully
 
