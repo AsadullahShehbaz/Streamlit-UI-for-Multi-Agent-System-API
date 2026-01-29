@@ -34,6 +34,7 @@ st.markdown("""
     position: relative;
 }
 
+/* CRITICAL FIX: Background overlay now behind everything */
 .main::before {
     content: '';
     position: fixed;
@@ -46,7 +47,7 @@ st.markdown("""
         radial-gradient(circle at 80% 70%, rgba(30, 144, 255, 0.15) 0%, transparent 50%);
     pointer-events: none;
     animation: pulse 8s ease-in-out infinite;
-    z-index: 0;
+    z-index: -1;  /* FIXED: Moved to negative z-index */
 }
 
 @keyframes gradientShift {
@@ -59,7 +60,7 @@ st.markdown("""
     50% {opacity: 1;}
 }
 
-/* Glass Morphism Container */
+/* Glass Morphism Container - INCREASED Z-INDEX */
 .block-container {
     backdrop-filter: blur(20px) saturate(180%);
     background: rgba(255, 255, 255, 0.05);
@@ -70,7 +71,33 @@ st.markdown("""
         0 8px 32px 0 rgba(0, 0, 0, 0.37),
         inset 0 1px 0 0 rgba(255, 255, 255, 0.1);
     position: relative;
-    z-index: 1;
+    z-index: 10;  /* INCREASED from 1 to 10 */
+}
+
+/* Ensure all Streamlit content is visible */
+.stApp {
+    z-index: 5;
+}
+
+/* Chat messages MUST be visible */
+.stChatMessage {
+    background: rgba(255, 255, 255, 0.05) !important;
+    backdrop-filter: blur(12px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border-radius: 18px !important;
+    padding: 1.2rem !important;
+    margin-bottom: 1rem !important;
+    animation: slideInUp 0.4s ease-out !important;
+    transition: all 0.3s ease !important;
+    position: relative !important;
+    z-index: 100 !important;  /* CRITICAL: Ensure messages appear on top */
+}
+
+.stChatMessage:hover {
+    background: rgba(255, 255, 255, 0.08) !important;
+    border-color: rgba(102, 126, 234, 0.3) !important;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.2);
 }
 
 /* Animated Header */
@@ -78,6 +105,8 @@ st.markdown("""
     text-align: center;
     margin-bottom: 2rem;
     animation: fadeInDown 0.8s ease-out;
+    position: relative;
+    z-index: 20;  /* Above everything */
 }
 
 .chat-title {
@@ -108,25 +137,6 @@ st.markdown("""
     50% {background-position: 100% 50%;}
 }
 
-/* Chat Messages Styling */
-.stChatMessage {
-    background: rgba(255, 255, 255, 0.05) !important;
-    backdrop-filter: blur(12px) !important;
-    border: 1px solid rgba(255, 255, 255, 0.1) !important;
-    border-radius: 18px !important;
-    padding: 1.2rem !important;
-    margin-bottom: 1rem !important;
-    animation: slideInUp 0.4s ease-out !important;
-    transition: all 0.3s ease !important;
-}
-
-.stChatMessage:hover {
-    background: rgba(255, 255, 255, 0.08) !important;
-    border-color: rgba(102, 126, 234, 0.3) !important;
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.2);
-}
-
 @keyframes slideInUp {
     from {
         opacity: 0;
@@ -142,6 +152,8 @@ st.markdown("""
 [data-testid="stChatMessageContent"] {
     color: rgba(255, 255, 255, 0.95);
     line-height: 1.7;
+    position: relative;
+    z-index: 101;  /* Above chat message container */
 }
 
 /* ============================================
@@ -155,6 +167,8 @@ st.markdown("""
     overflow-x: auto !important;
     border-collapse: collapse !important;
     font-size: 0.9rem !important;
+    position: relative;
+    z-index: 102;
 }
 
 .stChatMessage thead,
@@ -244,11 +258,11 @@ st.markdown("""
    END OF TABLE AND LINK FIX SECTION
    ============================================ */
 
-/* Chat Input */
+/* Chat Input - ENSURE VISIBILITY */
 .stChatInput {
     position: sticky;
     bottom: 0;
-    z-index: 100;
+    z-index: 200;  /* INCREASED: Above all chat content */
     padding: 1rem 0;
     background: linear-gradient(to top, rgba(10, 14, 26, 0.95), transparent);
 }
@@ -289,6 +303,7 @@ st.markdown("""
     box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4) !important;
     position: relative;
     overflow: hidden;
+    z-index: 50;
 }
 
 .stButton > button::before {
@@ -316,6 +331,7 @@ section[data-testid="stSidebar"] {
     background: linear-gradient(180deg, rgba(10, 14, 26, 0.95) 0%, rgba(26, 31, 58, 0.95) 100%);
     backdrop-filter: blur(20px);
     border-right: 1px solid rgba(255, 255, 255, 0.1);
+    z-index: 150;  /* Above main content but below input */
 }
 
 section[data-testid="stSidebar"] .block-container {
@@ -340,91 +356,6 @@ section[data-testid="stSidebar"] .stButton > button:hover {
     border-color: rgba(102, 126, 234, 0.5) !important;
 }
 
-/* Refresh Button */
-button:has-text("Refresh") {
-    background: linear-gradient(135deg, #22c55e, #16a34a) !important;
-}
-
-/* Clear Chat Button */
-button:has-text("Clear Chat") {
-    background: linear-gradient(135deg, #ef4444, #dc2626) !important;
-}
-
-/* Download Button */
-.stDownloadButton > button {
-    background: linear-gradient(135deg, #3b82f6, #2563eb) !important;
-}
-
-/* Spinner */
-.stSpinner > div {
-    border-top-color: #667eea !important;
-}
-
-/* Caption Text */
-.caption {
-    color: rgba(255, 255, 255, 0.6) !important;
-    font-size: 0.85rem;
-    margin-top: 0.3rem;
-}
-
-/* Divider */
-hr {
-    border: none;
-    height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(102, 126, 234, 0.5), transparent);
-    margin: 1.5rem 0;
-}
-
-/* Success/Error Messages */
-.stSuccess, .stError, .stWarning, .stInfo {
-    border-radius: 14px !important;
-    backdrop-filter: blur(10px);
-    border-left: 4px solid;
-    animation: slideInRight 0.5s ease-out;
-}
-
-@keyframes slideInRight {
-    from {
-        opacity: 0;
-        transform: translateX(-20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateX(0);
-    }
-}
-
-.stSuccess {
-    background: rgba(34, 197, 94, 0.15) !important;
-    border-left-color: #22c55e !important;
-}
-
-.stError {
-    background: rgba(239, 68, 68, 0.15) !important;
-    border-left-color: #ef4444 !important;
-}
-
-.stInfo {
-    background: rgba(59, 130, 246, 0.15) !important;
-    border-left-color: #3b82f6 !important;
-}
-
-/* Report Card Styling */
-.report-card {
-    background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
-    border: 1px solid rgba(102, 126, 234, 0.3);
-    border-radius: 18px;
-    padding: 1.5rem;
-    margin: 1rem 0;
-    backdrop-filter: blur(10px);
-    animation: fadeIn 0.6s ease-out;
-}
-
-@keyframes fadeIn {
-    from {opacity: 0;}
-    to {opacity: 1;}
-}
-
 /* Code Blocks - Enhanced Interactive Style */
 .stChatMessage pre {
     background: linear-gradient(135deg, rgba(30, 41, 59, 0.95), rgba(15, 23, 42, 0.95)) !important;
@@ -441,6 +372,7 @@ hr {
     font-family: 'Fira Code', 'Monaco', 'Courier New', monospace !important;
     font-size: 0.9rem !important;
     line-height: 1.6 !important;
+    z-index: 103;
 }
 
 .stChatMessage pre:hover {
@@ -473,67 +405,75 @@ hr {
     white-space: nowrap !important;
 }
 
-/* Copy button for code blocks */
-.stChatMessage [data-testid="stMarkdownContainer"] {
-    position: relative;
+/* Caption Text */
+.caption {
+    color: rgba(255, 255, 255, 0.6) !important;
+    font-size: 0.85rem;
+    margin-top: 0.3rem;
 }
 
-/* Syntax highlighting colors */
-.stChatMessage pre code .token.comment {
-    color: #6b7280 !important;
+/* Divider */
+hr {
+    border: none;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(102, 126, 234, 0.5), transparent);
+    margin: 1.5rem 0;
 }
 
-.stChatMessage pre code .token.string {
-    color: #10b981 !important;
+/* Success/Error Messages */
+.stSuccess, .stError, .stWarning, .stInfo {
+    border-radius: 14px !important;
+    backdrop-filter: blur(10px);
+    border-left: 4px solid;
+    animation: slideInRight 0.5s ease-out;
+    z-index: 110;
 }
 
-.stChatMessage pre code .token.number {
-    color: #f59e0b !important;
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
 }
 
-.stChatMessage pre code .token.keyword {
-    color: #8b5cf6 !important;
+.stSuccess {
+    background: rgba(34, 197, 94, 0.15) !important;
+    border-left-color: #22c55e !important;
 }
 
-.stChatMessage pre code .token.function {
-    color: #60a5fa !important;
+.stError {
+    background: rgba(239, 68, 68, 0.15) !important;
+    border-left-color: #ef4444 !important;
 }
 
-/* Add language label to code blocks */
-.stChatMessage pre::before {
-    content: 'Code';
-    position: absolute;
-    top: 0.5rem;
-    right: 0.5rem;
-    background: rgba(102, 126, 234, 0.2);
-    color: rgba(255, 255, 255, 0.7);
-    padding: 0.25rem 0.75rem;
-    border-radius: 6px;
-    font-size: 0.75rem;
-    font-weight: 600;
-    font-family: 'Inter', sans-serif;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
+.stInfo {
+    background: rgba(59, 130, 246, 0.15) !important;
+    border-left-color: #3b82f6 !important;
 }
 
-/* Scrollbar for code blocks */
-.stChatMessage pre::-webkit-scrollbar {
-    height: 8px;
-    width: 8px;
+/* Section Headers in Messages */
+.stChatMessage h2, .stChatMessage h3 {
+    color: #c084fc !important;
+    margin-top: 1rem !important;
+    margin-bottom: 0.5rem !important;
 }
 
-.stChatMessage pre::-webkit-scrollbar-track {
-    background: rgba(0, 0, 0, 0.3);
-    border-radius: 10px;
+.stChatMessage h2 {
+    font-size: 1.5rem !important;
 }
 
-.stChatMessage pre::-webkit-scrollbar-thumb {
-    background: rgba(102, 126, 234, 0.5);
-    border-radius: 10px;
+.stChatMessage h3 {
+    font-size: 1.2rem !important;
 }
 
-.stChatMessage pre::-webkit-scrollbar-thumb:hover {
-    background: rgba(102, 126, 234, 0.7);
+/* Links - Enhanced for proper wrapping */
+a:hover {
+    color: #93c5fd !important;
+    text-decoration: underline !important;
 }
 
 /* Sidebar Headers */
@@ -577,50 +517,6 @@ section[data-testid="stSidebar"] .caption {
 
 ::-webkit-scrollbar-thumb:hover {
     background: linear-gradient(180deg, #764ba2, #667eea);
-}
-
-/* Loading Animation */
-.loading-dots {
-    display: inline-block;
-}
-
-.loading-dots::after {
-    content: '...';
-    animation: dots 1.5s steps(4, end) infinite;
-}
-
-@keyframes dots {
-    0%, 20% { content: '.'; }
-    40% { content: '..'; }
-    60%, 100% { content: '...'; }
-}
-
-/* Section Headers in Messages */
-.stChatMessage h2, .stChatMessage h3 {
-    color: #c084fc !important;
-    margin-top: 1rem !important;
-    margin-bottom: 0.5rem !important;
-}
-
-.stChatMessage h2 {
-    font-size: 1.5rem !important;
-}
-
-.stChatMessage h3 {
-    font-size: 1.2rem !important;
-}
-
-/* Links - Enhanced for proper wrapping */
-a:hover {
-    color: #93c5fd !important;
-    text-decoration: underline !important;
-}
-
-/* Pre and code blocks should also wrap */
-pre {
-    white-space: pre-wrap !important;
-    word-wrap: break-word !important;
-    overflow-wrap: break-word !important;
 }
 
 /* Responsive Design */
@@ -729,10 +625,6 @@ with st.sidebar:
             use_container_width=True,
             help="Save conversation as a markdown file"
         )
-        
-        # Copy to Clipboard Button
-        if st.button("📋 Copy to Clipboard", use_container_width=True, help="Copy entire conversation"):
-            st.success("✅ Click the copy icon in any message to copy!")
     else:
         st.info("💬 Start chatting to enable export")
 
@@ -751,117 +643,11 @@ with st.sidebar:
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
-# Add JavaScript for enhanced code block interactivity
-st.markdown("""
-<script>
-// Wait for DOM to load
-document.addEventListener('DOMContentLoaded', function() {
-    enhanceCodeBlocks();
-});
-
-// Also run after Streamlit updates
-setTimeout(enhanceCodeBlocks, 1000);
-
-function enhanceCodeBlocks() {
-    // Find all pre elements in chat messages
-    const preElements = document.querySelectorAll('.stChatMessage pre');
-    
-    preElements.forEach((pre, index) => {
-        // Skip if already enhanced
-        if (pre.classList.contains('enhanced')) return;
-        pre.classList.add('enhanced');
-        
-        // Create copy button
-        const copyBtn = document.createElement('button');
-        copyBtn.innerHTML = '📋 Copy';
-        copyBtn.style.cssText = `
-            position: absolute;
-            top: 0.5rem;
-            right: 4rem;
-            background: rgba(102, 126, 234, 0.8);
-            color: white;
-            border: none;
-            padding: 0.4rem 0.8rem;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 0.75rem;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            z-index: 10;
-        `;
-        
-        copyBtn.addEventListener('mouseenter', function() {
-            this.style.background = 'rgba(102, 126, 234, 1)';
-            this.style.transform = 'scale(1.05)';
-        });
-        
-        copyBtn.addEventListener('mouseleave', function() {
-            this.style.background = 'rgba(102, 126, 234, 0.8)';
-            this.style.transform = 'scale(1)';
-        });
-        
-        copyBtn.addEventListener('click', function() {
-            const code = pre.querySelector('code');
-            const text = code ? code.textContent : pre.textContent;
-            
-            navigator.clipboard.writeText(text).then(() => {
-                copyBtn.innerHTML = '✅ Copied!';
-                copyBtn.style.background = 'rgba(34, 197, 94, 0.8)';
-                
-                setTimeout(() => {
-                    copyBtn.innerHTML = '📋 Copy';
-                    copyBtn.style.background = 'rgba(102, 126, 234, 0.8)';
-                }, 2000);
-            });
-        });
-        
-        pre.style.position = 'relative';
-        pre.appendChild(copyBtn);
-        
-        // Add line numbers
-        const code = pre.querySelector('code');
-        if (code) {
-            const lines = code.textContent.split('\\n');
-            if (lines.length > 3) {
-                code.style.paddingLeft = '3rem';
-                const lineNumbers = document.createElement('div');
-                lineNumbers.style.cssText = `
-                    position: absolute;
-                    left: 0;
-                    top: 1.5rem;
-                    padding: 0 0.75rem;
-                    color: rgba(255, 255, 255, 0.3);
-                    text-align: right;
-                    user-select: none;
-                    font-family: 'Monaco', 'Courier New', monospace;
-                    font-size: 0.8rem;
-                    line-height: 1.6;
-                `;
-                
-                let lineNumbersHTML = '';
-                for (let i = 1; i <= lines.length; i++) {
-                    lineNumbersHTML += i + '<br>';
-                }
-                lineNumbers.innerHTML = lineNumbersHTML;
-                pre.appendChild(lineNumbers);
-            }
-        }
-    });
-}
-
-// Re-run after Streamlit rerenders
-new MutationObserver(enhanceCodeBlocks).observe(document.body, {
-    childList: true,
-    subtree: true
-});
-</script>
-""", unsafe_allow_html=True)
-
 # Welcome Message
 if len(st.session_state.messages) == 0:
     st.markdown("""
     <div style="text-align: center; padding: 3rem 2rem; background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1)); 
-    border-radius: 20px; border: 2px dashed rgba(102, 126, 234, 0.3); margin: 2rem 0;">
+    border-radius: 20px; border: 2px dashed rgba(102, 126, 234, 0.3); margin: 2rem 0; position: relative; z-index: 50;">
         <h2 style="color: rgba(255,255,255,0.95); margin-bottom: 1rem;">👋 Welcome to AI Research Assistant!</h2>
         <p style="color: rgba(255,255,255,0.75); font-size: 1.1rem; line-height: 1.8;">
             I'm here to help you with comprehensive research on any topic.<br>
@@ -888,11 +674,15 @@ if len(st.session_state.messages) == 0:
     """, unsafe_allow_html=True)
 
 # ------------------------------------
-# 💬 SHOW CHAT HISTORY
+# 💬 SHOW CHAT HISTORY - WITH DEBUG INFO
 # ------------------------------------
 chat_container = st.container()
 with chat_container:
-    for msg in st.session_state.messages:
+    # DEBUG: Show message count
+    if st.session_state.messages:
+        st.caption(f"🔍 Debug: Displaying {len(st.session_state.messages)} messages")
+    
+    for idx, msg in enumerate(st.session_state.messages):
         with st.chat_message(msg["role"], avatar="🧑‍💼" if msg["role"] == "user" else "🤖"):
             # Enhanced display with better code block handling
             content = msg["content"]
@@ -954,12 +744,10 @@ Please try again or contact support if the issue persists.
             st.session_state.messages.append({"role": "assistant", "content": error_msg})
         else:
             # Success - Display clean report without HTML tags
-            # Clean the final_report by removing any HTML tags if present
             final_report = result.get('final_report', 'No report generated')
             
             # Remove the status-badge div if it exists in the report
             if '<div class="status-badge">' in final_report:
-                import re
                 final_report = re.sub(r'<div class="status-badge">.*?</div>', '', final_report, flags=re.DOTALL)
             
             report_md = f"""
