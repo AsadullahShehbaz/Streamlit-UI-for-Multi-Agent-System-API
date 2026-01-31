@@ -15,7 +15,7 @@ st.set_page_config(
 )
 
 # ------------------------------------
-# 🎨 PREMIUM CUSTOM STYLES WITH ROBUST LINK FIX
+# 🎨 FIXED CUSTOM STYLES - PROPER Z-INDEX AND VISIBILITY
 # ------------------------------------
 st.markdown("""
 <style>
@@ -34,7 +34,7 @@ st.markdown("""
     position: relative;
 }
 
-/* CRITICAL FIX: Background overlay now behind everything */
+/* FIXED: Background overlay with proper z-index */
 .main::before {
     content: '';
     position: fixed;
@@ -47,7 +47,7 @@ st.markdown("""
         radial-gradient(circle at 80% 70%, rgba(30, 144, 255, 0.15) 0%, transparent 50%);
     pointer-events: none;
     animation: pulse 8s ease-in-out infinite;
-    z-index: -1;  /* FIXED: Moved to negative z-index */
+    z-index: 0 !important;  /* FIXED: Ensure it stays in background */
 }
 
 @keyframes gradientShift {
@@ -60,7 +60,7 @@ st.markdown("""
     50% {opacity: 1;}
 }
 
-/* Glass Morphism Container - INCREASED Z-INDEX */
+/* Glass Morphism Container - PROPER Z-INDEX */
 .block-container {
     backdrop-filter: blur(20px) saturate(180%);
     background: rgba(255, 255, 255, 0.05);
@@ -71,31 +71,37 @@ st.markdown("""
         0 8px 32px 0 rgba(0, 0, 0, 0.37),
         inset 0 1px 0 0 rgba(255, 255, 255, 0.1);
     position: relative;
-    z-index: 10;  /* INCREASED from 1 to 10 */
+    z-index: 1 !important;  /* FIXED: Proper layering */
 }
 
-/* Ensure all Streamlit content is visible */
+/* CRITICAL FIX: Ensure all content is visible */
 .stApp {
-    z-index: 5;
+    position: relative;
+    z-index: 1;
 }
 
-/* Chat messages MUST be visible */
+.stApp > div {
+    position: relative;
+    z-index: 1;
+}
+
+/* Chat messages MUST be visible - SIMPLIFIED AND FIXED */
 .stChatMessage {
-    background: rgba(255, 255, 255, 0.05) !important;
+    background: rgba(255, 255, 255, 0.08) !important;
     backdrop-filter: blur(12px) !important;
-    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
     border-radius: 18px !important;
     padding: 1.2rem !important;
     margin-bottom: 1rem !important;
     animation: slideInUp 0.4s ease-out !important;
     transition: all 0.3s ease !important;
     position: relative !important;
-    z-index: 100 !important;  /* CRITICAL: Ensure messages appear on top */
+    z-index: 10 !important;  /* FIXED: Proper stacking */
 }
 
 .stChatMessage:hover {
-    background: rgba(255, 255, 255, 0.08) !important;
-    border-color: rgba(102, 126, 234, 0.3) !important;
+    background: rgba(255, 255, 255, 0.12) !important;
+    border-color: rgba(102, 126, 234, 0.4) !important;
     transform: translateY(-2px);
     box-shadow: 0 8px 25px rgba(102, 126, 234, 0.2);
 }
@@ -106,7 +112,7 @@ st.markdown("""
     margin-bottom: 2rem;
     animation: fadeInDown 0.8s ease-out;
     position: relative;
-    z-index: 20;  /* Above everything */
+    z-index: 2;
 }
 
 .chat-title {
@@ -148,16 +154,25 @@ st.markdown("""
     }
 }
 
-/* User Message */
+/* User Message Content - FIXED VISIBILITY */
 [data-testid="stChatMessageContent"] {
-    color: rgba(255, 255, 255, 0.95);
+    color: rgba(255, 255, 255, 0.95) !important;
     line-height: 1.7;
     position: relative;
-    z-index: 101;  /* Above chat message container */
+    z-index: 11 !important;
+}
+
+/* Ensure text is visible */
+.stChatMessage p,
+.stChatMessage div,
+.stChatMessage span {
+    color: rgba(255, 255, 255, 0.95) !important;
+    position: relative;
+    z-index: 11;
 }
 
 /* ============================================
-   ROBUST TABLE AND LINK FIX - CRITICAL SECTION
+   TABLE AND LINK STYLING - PROPER WRAPPING
    ============================================ */
 
 /* Force tables to be responsive */
@@ -168,7 +183,9 @@ st.markdown("""
     border-collapse: collapse !important;
     font-size: 0.9rem !important;
     position: relative;
-    z-index: 102;
+    z-index: 11;
+    background: rgba(0, 0, 0, 0.3) !important;
+    border-radius: 8px;
 }
 
 .stChatMessage thead,
@@ -193,9 +210,15 @@ st.markdown("""
     overflow-wrap: break-word !important;
     hyphens: auto !important;
     white-space: normal !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
 }
 
-/* Specific fix for link column - make it wider and wrap properly */
+.stChatMessage th {
+    background: rgba(102, 126, 234, 0.2) !important;
+    font-weight: 600;
+}
+
+/* Specific fix for link column */
 .stChatMessage td:last-child,
 .stChatMessage th:last-child {
     min-width: 200px !important;
@@ -215,6 +238,13 @@ st.markdown("""
     text-decoration: none !important;
     hyphens: auto !important;
     max-width: 100% !important;
+    position: relative;
+    z-index: 12;
+}
+
+.stChatMessage a:hover {
+    color: #93c5fd !important;
+    text-decoration: underline !important;
 }
 
 .stChatMessage td a {
@@ -226,6 +256,8 @@ st.markdown("""
     width: 100% !important;
     max-width: 100% !important;
     overflow-x: auto !important;
+    position: relative;
+    z-index: 11;
 }
 
 /* Additional wrapper fix */
@@ -254,15 +286,11 @@ st.markdown("""
     background: rgba(102, 126, 234, 0.7);
 }
 
-/* ============================================
-   END OF TABLE AND LINK FIX SECTION
-   ============================================ */
-
 /* Chat Input - ENSURE VISIBILITY */
 .stChatInput {
     position: sticky;
     bottom: 0;
-    z-index: 200;  /* INCREASED: Above all chat content */
+    z-index: 100 !important;  /* FIXED: High z-index for input */
     padding: 1rem 0;
     background: linear-gradient(to top, rgba(10, 14, 26, 0.95), transparent);
 }
@@ -303,7 +331,7 @@ st.markdown("""
     box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4) !important;
     position: relative;
     overflow: hidden;
-    z-index: 50;
+    z-index: 10;
 }
 
 .stButton > button::before {
@@ -331,7 +359,7 @@ section[data-testid="stSidebar"] {
     background: linear-gradient(180deg, rgba(10, 14, 26, 0.95) 0%, rgba(26, 31, 58, 0.95) 100%);
     backdrop-filter: blur(20px);
     border-right: 1px solid rgba(255, 255, 255, 0.1);
-    z-index: 150;  /* Above main content but below input */
+    z-index: 50;
 }
 
 section[data-testid="stSidebar"] .block-container {
@@ -372,7 +400,7 @@ section[data-testid="stSidebar"] .stButton > button:hover {
     font-family: 'Fira Code', 'Monaco', 'Courier New', monospace !important;
     font-size: 0.9rem !important;
     line-height: 1.6 !important;
-    z-index: 103;
+    z-index: 11;
 }
 
 .stChatMessage pre:hover {
@@ -426,7 +454,8 @@ hr {
     backdrop-filter: blur(10px);
     border-left: 4px solid;
     animation: slideInRight 0.5s ease-out;
-    z-index: 110;
+    z-index: 20;
+    position: relative;
 }
 
 @keyframes slideInRight {
@@ -468,12 +497,6 @@ hr {
 
 .stChatMessage h3 {
     font-size: 1.2rem !important;
-}
-
-/* Links - Enhanced for proper wrapping */
-a:hover {
-    color: #93c5fd !important;
-    text-decoration: underline !important;
 }
 
 /* Sidebar Headers */
@@ -647,7 +670,7 @@ if "messages" not in st.session_state:
 if len(st.session_state.messages) == 0:
     st.markdown("""
     <div style="text-align: center; padding: 3rem 2rem; background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1)); 
-    border-radius: 20px; border: 2px dashed rgba(102, 126, 234, 0.3); margin: 2rem 0; position: relative; z-index: 50;">
+    border-radius: 20px; border: 2px dashed rgba(102, 126, 234, 0.3); margin: 2rem 0; position: relative; z-index: 5;">
         <h2 style="color: rgba(255,255,255,0.95); margin-bottom: 1rem;">👋 Welcome to AI Research Assistant!</h2>
         <p style="color: rgba(255,255,255,0.75); font-size: 1.1rem; line-height: 1.8;">
             I'm here to help you with comprehensive research on any topic.<br>
@@ -674,17 +697,12 @@ if len(st.session_state.messages) == 0:
     """, unsafe_allow_html=True)
 
 # ------------------------------------
-# 💬 SHOW CHAT HISTORY - WITH DEBUG INFO
+# 💬 SHOW CHAT HISTORY - FIXED
 # ------------------------------------
 chat_container = st.container()
 with chat_container:
-    # DEBUG: Show message count
-    if st.session_state.messages:
-        st.caption(f"🔍 Debug: Displaying {len(st.session_state.messages)} messages")
-    
     for idx, msg in enumerate(st.session_state.messages):
         with st.chat_message(msg["role"], avatar="🧑‍💼" if msg["role"] == "user" else "🤖"):
-            # Enhanced display with better code block handling
             content = msg["content"]
             
             # Check if content has code blocks
