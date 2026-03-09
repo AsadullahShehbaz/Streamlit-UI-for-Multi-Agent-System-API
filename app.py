@@ -4,7 +4,7 @@ from utils import register_user, login_user, get_research_history
 
 # ---------- PAGE CONFIG ----------
 st.set_page_config(
-    page_title="AI Researcher Agent",
+    page_title="ResearchPilot-Autonomous-Agent",
     page_icon="🤖",
     layout="wide",
     initial_sidebar_state="expanded"
@@ -364,7 +364,7 @@ for key, val in SESSION_KEYS.items():
 st.session_state.setdefault("registration_success", False)
 
 # ---------- HEADER ----------
-st.markdown("<h1 class='title-anim'>🤖 AI Researcher Agent</h1>", unsafe_allow_html=True)
+st.markdown("<h1 class='title-anim'>🤖 ResearchPilot-Autonomous-Agent</h1>", unsafe_allow_html=True)
 st.markdown("<div class='subtitle'>✨ Multi-Agent System for Research · Discovery · Automation</div>", unsafe_allow_html=True)
 
 
